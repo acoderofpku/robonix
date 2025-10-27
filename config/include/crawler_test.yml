@@ -1,0 +1,20 @@
+driver:
+  # TODO: fix this to "pointcloud"
+  - crawler_ros2
+  # - raspi_hc_sr04
+  - crawler_camera
+  - crawler_lidar
+  - realsense_ros2
+  - static_tf
+  # - unilidar_L2
+capability:
+  - navigation2
+  - vision
+  - amcl
+skill:
+  - move
+  - vision
+  - semantic_map
+  - test_skill
+brain:
+  - test_brian

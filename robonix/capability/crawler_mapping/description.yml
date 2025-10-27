@@ -1,0 +1,10 @@
+name: "crawler_mapping"
+version: "1.0.0"
+author: "Cheng"
+start_on_boot: true
+startup_command: "bash run.sh"
+description: "The mapping using specified algorithm"
+feature: 
+  - "start_mapping"
+  - "stop_mapping"
+  - "save_map"

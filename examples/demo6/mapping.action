@@ -1,0 +1,44 @@
+from robonix.uapi.specs.skill_specs import EntityPath
+from robonix.uapi.runtime.action import action, EOS_TYPE_ActionResult, get_runtime, action_print
+from typing import Optional, Tuple
+
+@action
+def test_mapping(mapping_path: EntityPath,
+                 mapping_method: str = "gmapping",
+                 map_name: str = "demo_map",
+                 save_dir: str = "./maps",
+                 config_file: str = None) -> EOS_TYPE_ActionResult:
+    runtime  = get_runtime()
+    mapping = runtime.get_graph().get_entity_by_path(mapping_path)
+
+    if mapping is None:
+        action_print(f"Mapping entity not found at path: {mapping_path}")
+        return EOS_TYPE_ActionResult.FAILURE
+    
+    action_print(f"Start mapping:{mapping_method}")
+
+    result = mapping.cap_start_mapping()
+    if not result.get("success", False):
+        action_print(f"Starting mapping fail{result}")
+        return EOS_TYPE_ActionResult.FAILURE
+    action_print(f"Starting mapping successfully{result}")
+    import time
+    action_print("Mapping...(120s)")
+    time.sleep(120)
+
+    action_print("Saving map")
+    result = mapping.cap_save_map()
+    if not result.get("success", False):
+        action_print(f"Saving map fail{result}")
+        return EOS_TYPE_ActionResult.FAILURE
+    action_print(f"Saving map successfully{result}")
+
+    action_print("Stop mapping")
+    result = mapping.cap_stop_mapping()
+    if not result.get("success", False):
+        action_print(f"Stop mapping fail: {result}")
+        return EOS_TYPE_ActionResult.FAILURE
+    action_print("Mapping stopped")
+
+    action_print("Mapping success")
+    return EOS_TYPE_ActionResult.SUCCESS

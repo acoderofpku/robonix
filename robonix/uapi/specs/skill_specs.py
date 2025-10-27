@@ -163,6 +163,31 @@ EOS_SKILL_SPECS = {
         },
         "output": Tuple[float, float, float],  # (x,y,z) tuple
     },
+     "cap_start_mapping": {
+        "description": "Start SLAM mapping process using the specified algorithm (e.g., gmapping, cartographer, hector).",
+        "type": EOS_SkillType.CAPABILITY,
+        "input":[
+            None,
+            {"mapping_method": str, "config_file": str}
+        ],
+        "output": Dict[str, Any],
+    },
+
+    "cap_stop_mapping": {
+        "description": "Stop the currently running mapping process and release related resources.",
+        "type": EOS_SkillType.CAPABILITY,
+        "input": [None],
+        "output": Dict[str, Any],
+    },
+    "cap_save_map": {
+        "description":"Save the current generated map to a file.",
+        "type":EOS_SkillType.CAPABILITY,
+        "input":[
+            None,
+            {"map_name": str, "save_dir": Optional[str]},
+        ],#The map will be saved to a deafult file if there is no arg.
+        "output": Dict[str, Any],
+    },
     ####################
     ###### SKILLS ######
     ####################

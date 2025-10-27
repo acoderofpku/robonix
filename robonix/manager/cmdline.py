@@ -7,7 +7,7 @@ import os
 import atexit
 from typing import List, Dict, Any, Optional, Callable
 import traceback
-import aioconsole
+#import aioconsole
 from log import logger
 
 
