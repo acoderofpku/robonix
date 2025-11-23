@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Iterable
 import rclpy
 from rclpy.node import Node
 from rclpy.duration import Duration

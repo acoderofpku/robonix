@@ -163,17 +163,17 @@ EOS_SKILL_SPECS = {
         },
         "output": Tuple[float, float, float],  # (x,y,z) tuple
     },
-     "cap_start_mapping": {
-        "description": "Start SLAM mapping process using the specified algorithm (e.g., gmapping, cartographer, hector).",
+     "cap_start_slam_toolbox": {
+        "description": "Start Slam_toolbox process .",
         "type": EOS_SkillType.CAPABILITY,
         "input":[
             None,
-            {"mapping_method": str, "config_file": str}
+            {"robot_type": str, "config_file": str, "use_sim_time": bool}
         ],
         "output": Dict[str, Any],
     },
 
-    "cap_stop_mapping": {
+    "cap_stop_slam_toolbox": {
         "description": "Stop the currently running mapping process and release related resources.",
         "type": EOS_SkillType.CAPABILITY,
         "input": [None],
@@ -184,7 +184,7 @@ EOS_SKILL_SPECS = {
         "type":EOS_SkillType.CAPABILITY,
         "input":[
             None,
-            {"map_name": str, "save_dir": Optional[str]},
+            {"save_path": str,"map_name": str},
         ],#The map will be saved to a deafult file if there is no arg.
         "output": Dict[str, Any],
     },
@@ -252,5 +252,20 @@ EOS_SKILL_SPECS = {
         "input": {"spatiallm_txt": str},
         "output": EOS_TYPE_SpatialLM_WorldResult,
         "dependencies": ["cap_get_pose"],
+    },
+    "skl_build_2D_map": {
+        "description": "Build a 2D map",
+        "type": EOS_SkillType.SKILL,
+        "input": {
+                "robot_type": str,
+                "mapping_method": str,
+                "config_file": str,
+                "map_name": str,
+                "save_dir": str,
+                "mapping_time": int,
+                "duration_sec": float},
+        "output": Dict[str, Any],
+        "dependencies": ["cap_cap_start_slam_toolbox","cap_stop_slam_toolbox",
+                         "save_map"],
     },
 }

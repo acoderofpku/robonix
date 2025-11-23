@@ -54,10 +54,10 @@ def create_mapping_entity_builder():
         mapping = create_controllable_entity("mapping")
         root.add_child(mapping)
 
-        mapping.bind_skill("cap_start_mapping", start_mapping)
-        mapping.bind_skill("cap_stop_mapping", stop_mapping)
+        mapping.bind_skill("cap_start_slam_toolbox", start_slam_toolbox)
+        mapping.bind_skill("cap_stop_slam_toolbox", stop_slam_toolbox)
         mapping.bind_skill("cap_save_map", save_map)
-
+        mapping.bind_skill("skl_build_2D_map", skl_build_2D_map)
         logger.info("Mapping entity graph initialized:")
         logger.info(f"  root: {root.get_absolute_path()}")
         logger.info(f"  mapping: {mapping.get_absolute_path()}")
