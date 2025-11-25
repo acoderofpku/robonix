@@ -2,7 +2,7 @@ driver:
   # TODO: fix this to "pointcloud"
   - crawler_ros2
   # - raspi_hc_sr04
-  - crawler_camera
+  #- crawler_camera
   - crawler_lidar
   - realsense_ros2
   - static_tf

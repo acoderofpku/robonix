@@ -74,7 +74,8 @@ class Runtime:
         self._entity_builders: Dict[str, Callable] = {}
 
         self._initialized = True
-
+        #Action stop state list
+        self._action_stop_flags: Dict[str, bool] = {}
     def set_graph(self, graph: Entity):
         self.graph = graph
         self._graph_initialized = True
@@ -502,6 +503,15 @@ class Runtime:
 
         print_entity_tree_recursive(self.graph)
         print("=" * 50)
+
+    def stop_action(self, action_name: str):
+        """Mark an action as requested to stop."""
+        self._action_stop_flags[action_name] = True
+        logger.info(f"Action '{action_name}' stop requested")
+    
+    def should_stop_action(self, action_name: str) -> bool:
+        """Return True if this action received stop signal."""
+        return self._action_stop_flags.get(action_name, False)
 
 
 # Convenience function to get the singleton runtime instance

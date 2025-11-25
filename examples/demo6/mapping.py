@@ -20,6 +20,16 @@ from robonix.skill import *
 
 set_log_level("debug")
 
+import threading
+
+def listen_stop(runtime):
+    while True:
+        cmd = input().strip()
+        if cmd.lower() == "stop":
+            print("[User] stop signal received.")
+            runtime.stop_action("test_mapping")
+            
+            break
 
 def init_skill_providers(runtime):
     """Initialize skill providers for mapping demo"""
@@ -57,6 +67,7 @@ def create_mapping_entity_builder():
         mapping.bind_skill("cap_start_slam_toolbox", start_slam_toolbox)
         mapping.bind_skill("cap_stop_slam_toolbox", stop_slam_toolbox)
         mapping.bind_skill("cap_save_map", save_map)
+        mapping.bind_skill("cap_get_pose", get_pose)
         mapping.bind_skill("skl_build_2D_map", skl_build_2D_map)
         logger.info("Mapping entity graph initialized:")
         logger.info(f"  root: {root.get_absolute_path()}")
@@ -72,12 +83,15 @@ def main():
         help="Export scene info to JSON file"
         )
     args = parser.parse_args()
-
+    
     runtime = get_runtime()
     runtime.register_entity_builder("mapping", create_mapping_entity_builder())
     runtime.build_entity_graph("mapping")
     set_runtime(runtime)
     runtime.print_entity_tree()
+
+    listener = threading.Thread(target=listen_stop, args=(runtime,), daemon=True)
+    listener.start()
 
     if args.export_scene:
         runtime.export_scene_info(args.export_scene)
@@ -96,7 +110,6 @@ def main():
         logger.info("Starting test_mapping action...")
         thread = runtime.start_action("test_mapping")
         result = runtime.wait_for_action("test_mapping", timeout=600.0)
-
         logger.info(f"Mapping test completed with result: {result}")
         logger.info(" Demo completed successfully")
         return 0

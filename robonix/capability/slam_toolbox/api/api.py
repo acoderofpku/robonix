@@ -23,14 +23,51 @@ def get_default_config(robot_type):
 _slam_proc = None
 def start_slam_toolbox(robot_type="wheeltec", config_file=None, use_sim_time=False):
     """
-    启动 slam_toolbox 节点
+    启动 slam_toolbox 节点  
+    若系统中已有 slam_toolbox 运行，则先杀死旧进程再启动新的
     返回: dict(success: bool, message: str)
     """
     global _slam_proc
 
-    if _slam_proc is not None and _slam_proc.poll() is None:
-        return {"success": False, "message": "slam_toolbox is already running"}
+    # --------------------------
+    # 检查系统中是否已有 slam_toolbox 正在运行
+    # --------------------------
+    print("Starting Slam_toolbox")
+    try:
+        existing_pids = subprocess.check_output(
+            ["pgrep", "-f", "sync_slam_toolbox_node"],
+            text=True
+        ).strip().split("\n")
 
+        if existing_pids and existing_pids[0] != "":
+            print(f"[INFO] Existing slam_toolbox PIDs: {existing_pids}")
+            for pid in existing_pids:
+                try:
+                    os.killpg(os.getpgid(int(pid)), signal.SIGTERM)
+                except:
+                    os.kill(int(pid), signal.SIGTERM)
+            time.sleep(1)
+            print("[INFO] Old slam_toolbox process killed.")
+    except subprocess.CalledProcessError:
+        # pgrep 返回非 0 表示没有找到，不属于错误
+        pass
+    except Exception as e:
+        return {"success": False, "message": f"Failed to check existing slam_toolbox: {e}"}
+
+    # --------------------------
+    # 再检查脚本内部是否有已记录的子进程
+    # --------------------------
+    if _slam_proc is not None and _slam_proc.poll() is None:
+        try:
+            os.killpg(os.getpgid(_slam_proc.pid), signal.SIGTERM)
+            _slam_proc.wait(timeout=5)
+            _slam_proc = None
+        except Exception as e:
+            return {"success": False, "message": f"Failed to kill previous internal slam_toolbox: {e}"}
+
+    # --------------------------
+    # 开始启动新的 slam_toolbox
+    # --------------------------
     try:
         if config_file is None:
             config_file = get_default_config(robot_type)
@@ -40,7 +77,6 @@ def start_slam_toolbox(robot_type="wheeltec", config_file=None, use_sim_time=Fal
 
         odom_topic = "odom_combined" if robot_type == "wheeltec" else "odom"
 
-        # 构建 ros2 run 命令
         cmd = (
             f"ros2 run slam_toolbox sync_slam_toolbox_node "
             f"--ros-args "
@@ -56,14 +92,14 @@ def start_slam_toolbox(robot_type="wheeltec", config_file=None, use_sim_time=Fal
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            preexec_fn=os.setsid  # 方便后续通过 os.killpg 停止整个进程组
+            preexec_fn=os.setsid
         )
 
         return {"success": True, "message": "slam_toolbox started successfully"}
 
     except Exception as e:
         return {"success": False, "message": f"Failed to start slam_toolbox: {e}"}
-
+    
 def stop_slam_toolbox():
     """
     停止 slam_toolbox 节点
