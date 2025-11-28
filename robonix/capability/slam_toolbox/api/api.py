@@ -11,6 +11,7 @@ import subprocess
 import shlex
 import signal 
 from nav2_msgs.srv import SaveMap
+from robonix.manager.eaios_decorators import eaios
 
 def get_default_config(robot_type):
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -21,6 +22,8 @@ def get_default_config(robot_type):
     return os.path.join(config_dir, "sync.param.yml")
 
 _slam_proc = None
+
+@eaios.api
 def start_slam_toolbox(robot_type="wheeltec", config_file=None, use_sim_time=False):
     """
     启动 slam_toolbox 节点  
@@ -99,7 +102,8 @@ def start_slam_toolbox(robot_type="wheeltec", config_file=None, use_sim_time=Fal
 
     except Exception as e:
         return {"success": False, "message": f"Failed to start slam_toolbox: {e}"}
-    
+
+@eaios.api
 def stop_slam_toolbox():
     """
     停止 slam_toolbox 节点

@@ -2,6 +2,10 @@ import os
 import subprocess
 import time
 
+from robonix.manager.eaios_decorators import eaios
+
+
+@eaios.api
 def save_map(save_dir="./maps", map_name="map"):
     """
     通过 map_saver_cli 保存当前 SLAM 地图
