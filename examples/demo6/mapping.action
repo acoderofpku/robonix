@@ -17,13 +17,13 @@ def test_mapping(mapping_path: EntityPath,
     
     action_print(f"Start mapping:{mapping_method}")
    
-    result = mapping.cap_start_slam_toolbox(robot_type = "wheeltec")
+    result = mapping.cap_start_slam_toolbox(robot_type = "generic")
     if not result.get("success", False):
         action_print(f"Starting mapping fail{result}")
         return EOS_TYPE_ActionResult.FAILURE
     action_print(f"Starting mapping successfully{result}")
-    sleep_time = 1200
-    action_print("Mapping...(1200s)")
+    sleep_time = 1800
+    action_print("Mapping...(1800s)")
     currtime = time.time()
     while time.time() - currtime < sleep_time:
         if runtime.should_stop_action("test_mapping"):
