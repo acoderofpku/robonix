@@ -4,6 +4,7 @@ import time
 
 
 @eaios.api
+@eaios.caller
 def skl_build_2D_map(
     robot_type: str = "wheeltec",
     mapping_method: str = "slam_toolbox",
