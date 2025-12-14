@@ -37,8 +37,12 @@ class CameraRGBDGetter(Node):
         self.sync.registerCallback(self.callback)
 
     def callback(self, rgb_msg, depth_msg):
-        self.rgb_image = self.cv_bridge.imgmsg_to_cv2(rgb_msg, desired_encoding='bgr8')
-        self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough')
+        rgb_enc = rgb_msg.encoding
+        print(rgb_enc)
+        self.rgb_image = self.cv_bridge.imgmsg_to_cv2(rgb_msg, desired_encoding="passthrough")
+        depth_enc = depth_msg.encoding
+        print(depth_enc)
+        self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_msg, desired_encoding="passthrough")
         self.get_logger().info("Got synchronized RGB and depth images.")
         self._event.set()
         self.destroy_subscription(self.rgb_sub.sub)

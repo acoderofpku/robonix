@@ -25,18 +25,37 @@ def remove_mask_outliers(data, lower_percentile=10, upper_percentile=90):
     Remove outliers from depth data using percentile method
     
     Args:
-        data: List of depth values
+        data: List of depth values or numpy array
         lower_percentile: Lower percentile threshold
         upper_percentile: Upper percentile threshold
         
     Returns:
-        Filtered depth values
+        Filtered depth values. If no valid data remains after filtering,
+        returns an empty list.
     """
     arr = np.array(data)
-    lower = np.percentile(arr, lower_percentile)
-    upper = np.percentile(arr, upper_percentile)
-    filtered = arr[(arr >= lower) & (arr <= upper)]
+    
+    # 检查是否为空或所有值都是非有限数（NaN, Inf）
+    if arr.size == 0 or not np.any(np.isfinite(arr)):
+        return []
+    
+    # 过滤掉 NaN 和 Inf
+    finite_arr = arr[np.isfinite(arr)]
+    
+    # 如果过滤后数组为空
+    if finite_arr.size == 0:
+        return []
+
+    lower = np.percentile(finite_arr, lower_percentile)
+    upper = np.percentile(finite_arr, upper_percentile)
+    filtered = finite_arr[(finite_arr >= lower) & (finite_arr <= upper)]
+    
+    # 如果过滤后仍无有效数据
+    if filtered.size == 0:
+        return []
+    
     return filtered.tolist()
+
 
 def get_mask_center_opencv(mask_points):
     """

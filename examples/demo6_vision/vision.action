@@ -1,0 +1,29 @@
+from robonix.uapi.specs.skill_specs import EntityPath
+from robonix.uapi.runtime.action import action, EOS_TYPE_ActionResult, get_runtime, action_print
+import cv2
+
+@action
+def test_vision(ranger_path: EntityPath) -> EOS_TYPE_ActionResult:
+    runtime = get_runtime()
+    ranger = runtime.get_graph().get_entity_by_path(ranger_path)
+
+    if ranger is None:
+        action_print(f"ranger not found at path: {ranger_path}")
+        return EOS_TYPE_ActionResult.FAILURE
+ 
+    result = ranger.cap_camera_info(camera_name="camera")
+    action_print(f"Camera_info result: {result}")
+    
+    rgb_image, depth_image = ranger.cap_camera_dep_rgb(camera_name="camera")
+    if rgb_image is not None:
+        action_print("Saving rgb picture")
+        cv2.imwrite("rgb.png", rgb_image)
+    else: 
+        action_print("Rgb picture is none")
+    if depth_image is not None:
+        action_print("Saving depth picture")
+        cv2.imwrite("depth.png", depth_image)
+    else:
+        action_print(f"depth image is none")
+        return EOS_TYPE_ActionResult.FAILURE
+    return EOS_TYPE_ActionResult.SUCCESS

@@ -88,9 +88,9 @@ def skl_detect_objs(self_entity, camera_name: str) -> dict:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         # Construct path to model file relative to script location
         model_path = os.path.join(script_dir, "..", "models", "yoloe-11l-seg-pf.pt")
-        yolo = YOLOE(model_path)
+        yolo = YOLOE("/home/wheeltec/Desktop/Robonix/yoloe-11l-seg-pf.pt")
         # Run YOLO detection
-        results = yolo(source=np_color_image, device="cuda:0")
+        results = yolo(source=np_color_image, device="cpu")
         detection = results[0]
         if detection is None:
             return {}
